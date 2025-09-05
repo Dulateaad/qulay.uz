@@ -1,21 +1,40 @@
-from aiogram import Bot, Dispatcher, types
-from aiogram.utils import executor
-import os
+import logging
+from telegram import Update, WebAppInfo, KeyboardButton, ReplyKeyboardMarkup
+from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
 
-API_TOKEN = os.getenv("8428416300:AAHTSGcXCEE5ctRDnSWS5SfZP20woRGEwkg")  # Храним токен в переменных окружения
+# Вставь свой токен
+BOT_TOKEN = "8428416300:AAHTSGcXCEE5ctRDnSWS5SfZP20woRGEwkg"
 
-bot = Bot(token=API_TOKEN)
-dp = Dispatcher(bot)
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO
+)
 
-@dp.message_handler(commands=['start'])
-async def start_cmd(message: types.Message):
-    keyboard = types.InlineKeyboardMarkup()
-    webapp_btn = types.InlineKeyboardButton(
-        text="Открыть приложение",
-        web_app=types.WebAppInfo(url="https://studio--mening-ustozim.us-central1.hosted.app/")
+# Команда /start
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    keyboard = [
+        [KeyboardButton("Открыть приложение", web_app=WebAppInfo(url="https://studio--mening-ustozim.us-central1.hosted.app/"))]
+    ]
+    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+
+    await update.message.reply_text(
+        "Привет! 👋 Нажми кнопку ниже, чтобы открыть приложение:",
+        reply_markup=reply_markup
     )
-    keyboard.add(webapp_btn)
-    await message.answer("Привет 👋 Нажми кнопку, чтобы открыть приложение:", reply_markup=keyboard)
+
+# Обработка текстов
+async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(f"Ты написал: {update.message.text}")
+
+def main():
+    application = Application.builder().token(BOT_TOKEN).build()
+
+    # Хендлеры
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
+
+    # Запуск
+    application.run_polling()
 
 if __name__ == "__main__":
-    executor.start_polling(dp, skip_updates=True)
+    main()
