@@ -13,7 +13,7 @@ logging.basicConfig(
 # Команда /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
-        [KeyboardButton("Открыть приложение", web_app=WebAppInfo(url="studio--studio-209476327-befec.us-central1.hosted.app"))]
+        [KeyboardButton("Открыть приложение", web_app=WebAppInfo(url="https://studio--studio-209476327-befec.us-central1.hosted.app/"))]
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
 
